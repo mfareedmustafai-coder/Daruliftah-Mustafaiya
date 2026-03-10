@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دارالافتاء مصطفائیہ - سوال پوچھیں</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+        body { font-family: 'Noto Nastaliq Urdu', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #333; }
+        .top-header { background-color: #f8f9fa; text-align: center; padding: 10px; font-size: 1.5em; font-weight: bold; border-bottom: 1px solid #ddd; }
+        .main-header { background-color: #2b5c5a; color: white; text-align: center; padding: 20px; }
+        .main-header h1 { margin: 0; font-size: 2em; }
+        .nav-bar { background-color: #f1f1f1; padding: 10px; display: flex; justify-content: center; gap: 20px; border-bottom: 2px solid #ddd; }
+        .nav-bar button, .nav-bar a { background: none; border: none; font-family: inherit; font-size: 1.2em; cursor: pointer; color: #555; padding: 5px 15px; text-decoration: none; }
+        .nav-bar button:hover, .nav-bar button.active, .nav-bar a:hover { color: #2b5c5a; border-bottom: 2px solid #2b5c5a; font-weight: bold; }
+        .container { max-width: 800px; margin: 30px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2.section-title { color: #2b5c5a; text-align: center; margin-bottom: 20px; }
+        .description { text-align: justify; line-height: 2; margin-bottom: 30px; font-size: 1.1em; }
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-group input, .form-group textarea { width: 100%; padding: 15px; border: 2px dashed #a0a0a0; border-radius: 5px; font-family: inherit; font-size: 1.1em; box-sizing: border-box; background-color: #fdfdfd; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #2b5c5a; }
+        .form-group label { position: absolute; right: 15px; top: 15px; color: #777; pointer-events: none; transition: 0.2s ease all; }
+        .form-group input:focus + label, .form-group input:valid + label, .form-group textarea:focus + label, .form-group textarea:valid + label { opacity: 0; }
+        .submit-btn { background-color: #3b827e; color: white; border: none; padding: 12px 30px; font-family: inherit; font-size: 1.2em; border-radius: 5px; cursor: pointer; display: block; margin: 0 auto; transition: 0.3s; }
+        .submit-btn:hover { background-color: #2b5c5a; }
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 90%; max-width: 500px; }
+        .modal-box h3 { color: #2b5c5a; margin-top: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="top-header">بسم اللہ الرحمن الرحیم</div>
+    <div class="main-header">
+        <h1>دارالافتاء مصطفائیہ</h1>
+    </div>
+    
+    <div class="nav-bar">
+        <button id="nav-user-home" class="active">ہوم</button>
+        <button id="nav-user-more">مزید</button>
+        <!-- Link to Admin Panel -->
+        <a href="admin.html" style="color: #666; font-size: 0.9em; margin-right: auto;">ایڈمن پینل</a>
+    </div>
+
+    <!-- Home Section (Form) -->
+    <div class="container" id="user-home-section">
+        <h2 class="section-title">دارالافتاء اہلسنت سے سوال پوچھیں</h2>
+        <p class="description">جدید وقدیم، روزمرہ معاملات زندگی کے بارے فقہی مسائل سے متعلق بے شمار فتاوی اور آپ کے شرعی مسائل کے جوابات ۔ بذریعہ ای میل سوالات پوچھنے اور دارالافتاء اہلسنت کے مفتی صاحب سے جواب حاصل کیجئے۔</p>
+        
+        <form id="fatwa-form">
+            <div class="form-group">
+                <input type="text" id="u-name" required>
+                <label>نام</label>
+            </div>
+            <div class="form-group">
+                <input type="email" id="u-email" required>
+                <label>ای میل</label>
+            </div>
+            <div class="form-group">
+                <input type="number" id="u-phone">
+                <label>فون نمبر</label>
+            </div>
+            <div class="form-group">
+                <input type="text" id="u-subject" required>
+                <label>مضمون</label>
+            </div>
+            <div class="form-group">
+                <textarea id="u-question" rows="5" required></textarea>
+                <label>سوال</label>
+            </div>
+            <button type="submit" class="submit-btn">محفوظ کریں</button>
+        </form>
+    </div>
+
+    <!-- More Info Section -->
+    <div class="container" id="user-more-section" style="display: none;">
+        <h2 class="section-title">دارالافتاء مصطفائیہ</h2>
+        <div style="text-align: center; line-height: 2.5; font-size: 1.2em;">
+            <p><strong>مقصد :</strong> عوام الناس کے شرعی مسائل کے حل کے لیے بنایا ہے</p>
+            <p><strong>فتویٰ نویسی :</strong> حضرت علامہ مولانا محمد فرید مصطفائی</p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-box">
+            <h3>سوال جمع کروانے کا شکریہ!</h3>
+            <p>آپ کا سوال کامیابی سے جمع کر لیا گیا ہے۔ براہ کرم نیچے دی گئی معلومات کو محفوظ کر لیں۔</p>
+            <p style="font-size: 1.5em; font-weight: bold; color: #2b5c5a;">سوال نمبر: <span id="display-q-id"></span></p>
+            <button class="submit-btn" style="margin-top: 20px;" onclick="document.getElementById('success-modal').style.display='none'">بند کریں</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwb73s0PKMP3uReEmr6cux2Now2i9h4QA",
+            authDomain: "daruliftah-mustafaiya.firebaseapp.com",
+            databaseURL: "https://daruliftah-mustafaiya-default-rtdb.firebaseio.com",
+            projectId: "daruliftah-mustafaiya",
+            storageBucket: "daruliftah-mustafaiya.firebasestorage.app",
+            messagingSenderId: "471085138290",
+            appId: "1:471085138290:web:f8a0ddcd05c2e0ea951deb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Navigation Logic
+        const secHome = document.getElementById('user-home-section');
+        const secMore = document.getElementById('user-more-section');
+        const btnHome = document.getElementById('nav-user-home');
+        const btnMore = document.getElementById('nav-user-more');
+
+        btnHome.onclick = () => { secHome.style.display = 'block'; secMore.style.display = 'none'; btnHome.classList.add('active'); btnMore.classList.remove('active'); };
+        btnMore.onclick = () => { secHome.style.display = 'none'; secMore.style.display = 'block'; btnMore.classList.add('active'); btnHome.classList.remove('active'); };
+
+        // Form Submit Logic
+        document.getElementById('fatwa-form').onsubmit = (e) => {
+            e.preventDefault();
+            
+            // Generate Random Question ID
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const questionId = "WEB-" + randomNum;
+
+            const data = {
+                qId: questionId,
+                name: document.getElementById('u-name').value,
+                email: document.getElementById('u-email').value,
+                phone: document.getElementById('u-phone').value,
+                subject: document.getElementById('u-subject').value,
+                question: document.getElementById('u-question').value,
+                status: "Pending",
+                answer: "",
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            // Save to Firebase
+            db.ref('questions').push(data).then(() => {
+                document.getElementById('display-q-id').innerText = questionId;
+                document.getElementById('success-modal').style.display = 'flex';
+                document.getElementById('fatwa-form').reset();
+            }).catch(error => alert("ایرر: " + error.message));
+        };
+    </script>
+</body>
+</html>
