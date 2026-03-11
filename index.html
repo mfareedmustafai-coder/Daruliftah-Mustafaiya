@@ -43,6 +43,7 @@
     
     <div class="nav-bar">
         <button id="nav-user-home" class="active">ہوم</button>
+        <button id="nav-user-fatawa">فتاویٰ</button>
         <button id="nav-user-more">مزید</button>
         <!-- Link to Admin Panel -->
         <a href="admin.html" style="color: #666; font-size: 0.9em; margin-right: auto;">ایڈمن پینل</a>
@@ -76,6 +77,11 @@
             </div>
             <button type="submit" class="submit-btn">محفوظ کریں</button>
         </form>
+    </div>
+
+    <!-- Fatawa Section (Website Embedded) -->
+    <div class="container" id="user-fatawa-section" style="display: none; padding: 0; height: 80vh; min-height: 600px; overflow: hidden;">
+        <iframe src="https://www.fatwaqa.com/ur" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
     <!-- More Info Section -->
@@ -114,12 +120,39 @@
 
         // Navigation Logic
         const secHome = document.getElementById('user-home-section');
+        const secFatawa = document.getElementById('user-fatawa-section');
         const secMore = document.getElementById('user-more-section');
+        
         const btnHome = document.getElementById('nav-user-home');
+        const btnFatawa = document.getElementById('nav-user-fatawa');
         const btnMore = document.getElementById('nav-user-more');
 
-        btnHome.onclick = () => { secHome.style.display = 'block'; secMore.style.display = 'none'; btnHome.classList.add('active'); btnMore.classList.remove('active'); };
-        btnMore.onclick = () => { secHome.style.display = 'none'; secMore.style.display = 'block'; btnMore.classList.add('active'); btnHome.classList.remove('active'); };
+        btnHome.onclick = () => { 
+            secHome.style.display = 'block'; 
+            secFatawa.style.display = 'none';
+            secMore.style.display = 'none'; 
+            btnHome.classList.add('active'); 
+            btnFatawa.classList.remove('active');
+            btnMore.classList.remove('active'); 
+        };
+
+        btnFatawa.onclick = () => { 
+            secHome.style.display = 'none'; 
+            secFatawa.style.display = 'block';
+            secMore.style.display = 'none'; 
+            btnFatawa.classList.add('active'); 
+            btnHome.classList.remove('active');
+            btnMore.classList.remove('active'); 
+        };
+
+        btnMore.onclick = () => { 
+            secHome.style.display = 'none'; 
+            secFatawa.style.display = 'none';
+            secMore.style.display = 'block'; 
+            btnMore.classList.add('active'); 
+            btnHome.classList.remove('active'); 
+            btnFatawa.classList.remove('active');
+        };
 
         // Form Submit Logic
         document.getElementById('fatwa-form').onsubmit = (e) => {
