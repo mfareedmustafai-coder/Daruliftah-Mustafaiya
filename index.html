@@ -33,7 +33,6 @@
         .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 90%; max-width: 500px; }
         .modal-box h3 { color: #2b5c5a; margin-top: 0; }
 
-        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .nav-bar { flex-wrap: wrap; gap: 10px; }
             .nav-bar button, .nav-bar a { font-size: 1em; padding: 5px 10px; }
@@ -75,6 +74,10 @@
             <div class="form-group">
                 <input type="number" id="u-phone" required>
                 <label>فون نمبر</label>
+            </div>
+            <div class="form-group">
+                <input type="number" id="u-whatsapp" required>
+                <label>واٹس ایپ نمبر</label>
             </div>
             <div class="form-group">
                 <input type="text" id="u-subject" required>
@@ -127,7 +130,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Navigation Logic
         const secHome = document.getElementById('user-home-section');
         const secFatawa = document.getElementById('user-fatawa-section');
         const secMore = document.getElementById('user-more-section');
@@ -139,22 +141,38 @@
         btnFatawa.onclick = () => { secHome.style.display = 'none'; secFatawa.style.display = 'block'; secMore.style.display = 'none'; btnFatawa.classList.add('active'); btnHome.classList.remove('active'); btnMore.classList.remove('active'); };
         btnMore.onclick = () => { secHome.style.display = 'none'; secFatawa.style.display = 'none'; secMore.style.display = 'block'; btnMore.classList.add('active'); btnHome.classList.remove('active'); btnFatawa.classList.remove('active'); };
 
-        // Form Submit
         document.getElementById('fatwa-form').onsubmit = (e) => {
             e.preventDefault();
+            
+            // Hard Validation check
+            const name = document.getElementById('u-name').value;
+            const email = document.getElementById('u-email').value;
+            const phone = document.getElementById('u-phone').value;
+            const whatsapp = document.getElementById('u-whatsapp').value;
+            const subject = document.getElementById('u-subject').value;
+            const question = document.getElementById('u-question').value;
+
+            if(!name || !email || !phone || !whatsapp || !subject || !question) {
+                alert("براہ کرم تمام خانے پُر کریں۔ کوئی بھی ڈبہ خالی نہ چھوڑیں!");
+                return;
+            }
+
             const randomNum = Math.floor(1000 + Math.random() * 9000);
             const questionId = "WEB-" + randomNum;
+
             const data = {
                 qId: questionId,
-                name: document.getElementById('u-name').value,
-                email: document.getElementById('u-email').value,
-                phone: document.getElementById('u-phone').value,
-                subject: document.getElementById('u-subject').value,
-                question: document.getElementById('u-question').value,
+                name: name,
+                email: email,
+                phone: phone,
+                whatsapp: whatsapp,
+                subject: subject,
+                question: question,
                 status: "Pending",
                 answer: "",
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             };
+
             db.ref('questions').push(data).then(() => {
                 document.getElementById('display-q-id').innerText = questionId;
                 document.getElementById('success-modal').style.display = 'flex';
